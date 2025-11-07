@@ -1,0 +1,25 @@
+class HomeController < ApplicationController
+  before_action :validate_address, only: [:check_weather]
+  attr_reader :address_servicwe
+
+
+  def index
+  end
+
+  def check_weather
+    if @address_service.postal_code.present?
+      @weather_service = WeatherCheckService.new(@address_service)
+      respond_to do |format|
+        format.js { render action: 'index' }
+      end
+    else
+      flash[:error] = 'The Address entered is invalid. Please enter a valid address'
+      redirect_to root_path
+    end
+  end
+
+  def validate_address
+    @address_service = ValidateAddressService.new(params[:input_address][:address])
+  end
+end
+
